@@ -21,6 +21,9 @@ WORKDIR /app
 # Copy project files
 COPY ./app .
 
+# Create tables in sqlite db
+RUN python manage.py migrate
+
 # Expose port
 EXPOSE 8000
 
