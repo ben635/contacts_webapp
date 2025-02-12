@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 django = "*"
+django-phonenumbers = "*"
+django-phonenumber-field = "*"
 
 [dev-packages]
 
