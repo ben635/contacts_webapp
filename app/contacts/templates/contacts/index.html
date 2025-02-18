@@ -1,12 +1,97 @@
-<div class="container mt-4">
-    <h1 class="text-primary mb-4">My Contacts</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Contacts</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <style>
+    /* Body with night-sky gradient and smooth font */
+    body {
+        background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding-bottom: 50px;
+    }
+    
+    /* Navbar styles */
+    .navbar {
+        background-color: #0062cc;
+    }
+    .navbar-brand, .nav-link {
+        color: #fff !important;
+    }
+    
+    /* Card styling with improved border radius and shadow */
+    .card {
+        border: none;
+        border-radius: 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 15px rgba(0,0,0,0.15);
+    }
+    
+    /* New contact card darker background */
+    .new-contact-card {
+        background-color: #ffffff;
+    }
+    
+    /* Button group spacing */
+    .btn-group {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+    
+    /* Input styling with soft borders and rounded corners */
+    .form-control {
+        border-radius: 8px;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #ced4da;
+    }
+    .form-group label {
+        font-weight: bold;
+    }
+    
+    /* Container width and spacing */
+    .container {
+        max-width: 900px;
+        margin-bottom: 50px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 576px) {
+        .btn-group {
+            flex-direction: column;
+        }
+    }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="#">Contacts App</a>
+  </div>
+</nav>
+
+<div class="container mt-5">
+    <h1 class="text-primary mb-4 text-center">My Contacts</h1>
     
     <div id="contacts-list">
         {% if contacts %}
             <div class="row" id="contacts-container">
                 {% for contact in contacts %}
-                    <div class="col-md-4 mb-3 contact-card">
-                        <div class="card shadow-sm hover-effect">
+                    <div class="col-md-4 mb-3 contact-card" data-contact-id="{{ contact.id }}">
+                        <div class="card shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title text-primary">{{ contact.name }}</h5>
                                 <p class="card-text">
@@ -23,55 +108,38 @@
                 {% endfor %}
             </div>
         {% else %}
-            <p class="text-muted">No contacts found.</p>
+            <p class="text-muted text-center">No contacts found.</p>
         {% endif %}
     </div>
 
-    <div class="card shadow-sm mt-4">
+    <div class="card shadow-sm mt-4 new-contact-card">
         <div class="card-body">
-            <h2 class="text-primary mb-3">Add New Contact</h2>
+            <h2 class="text-primary mb-3 text-center">Add New Contact</h2>
             <form id="add-contact-form" method="POST" action="{% url 'create_contact' %}">
                 {% csrf_token %}
                 <div class="form-group mb-3">
                     <label for="name">Name:</label>
-                    <input type="text" class="form-control" id="name" name="name" required>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" required>
                 </div>
                 <div class="form-group mb-3">
                     <label for="address">Address:</label>
-                    <input type="text" class="form-control" id="address" name="address" required>
+                    <input type="text" class="form-control" id="address" name="address" placeholder="Enter address" required>
                 </div>
                 <div class="form-group mb-3">
                     <label for="telephone">Telephone:</label>
-                    <input type="tel" class="form-control" id="telephone" name="telephone_number" required>
+                    <input type="tel" class="form-control" id="telephone" name="telephone_number" placeholder="Enter telephone" required>
                 </div>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Add Contact
-                </button>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Contact
+                    </button>
+                </div>
             </form>
         </div>
     </div>
 </div>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-<style>
-.hover-effect {
-    transition: transform 0.2s;
-}
-.hover-effect:hover {
-    transform: translateY(-5px);
-}
-.contact-card .card {
-    border: none;
-    border-radius: 10px;
-}
-.btn-group {
-    width: 100%;
-    display: flex;
-    gap: 10px;
-}
-</style>
-
+<!-- JavaScript -->
 <script>
 document.getElementById('add-contact-form').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -87,11 +155,16 @@ document.getElementById('add-contact-form').addEventListener('submit', function(
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            // Remove "No contacts found" message if it exists
+            const noContactsMsg = document.querySelector('#contacts-list p.text-muted');
+            if (noContactsMsg) {
+                noContactsMsg.remove();
+            }
             // Add new contact card to the list without page reload
             const contactsContainer = document.getElementById('contacts-container');
             const newContactHtml = `
-                <div class="col-md-4 mb-3 contact-card">
-                    <div class="card shadow-sm hover-effect">
+                <div class="col-md-4 mb-3 contact-card" data-contact-id="${data.contact.id}">
+                    <div class="card shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title text-primary">${data.contact.name}</h5>
                             <p class="card-text">
@@ -106,7 +179,17 @@ document.getElementById('add-contact-form').addEventListener('submit', function(
                     </div>
                 </div>
             `;
-            contactsContainer.insertAdjacentHTML('afterbegin', newContactHtml);
+            // If no contacts exist yet, create container and insert HTML.
+            if (!contactsContainer) {
+                const container = document.createElement('div');
+                container.id = 'contacts-container';
+                container.className = 'row';
+                container.innerHTML = newContactHtml;
+                document.getElementById('contacts-list').innerHTML = '';
+                document.getElementById('contacts-list').appendChild(container);
+            } else {
+                contactsContainer.insertAdjacentHTML('afterbegin', newContactHtml);
+            }
             this.reset();
         }
     });
@@ -114,19 +197,26 @@ document.getElementById('add-contact-form').addEventListener('submit', function(
 
 function deleteContact(contactId) {
     if (confirm('Are you sure you want to delete this contact?')) {
-        fetch(`/contacts/${contactId}/delete/`, {
+        fetch(`/front/${contactId}/delete/`, {
             method: 'DELETE',
             headers: {
                 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
             }
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
+        .then(response => response.text())
+        .then(text => {
+            if (text === "Success!") {
                 const contactElement = document.querySelector(`[data-contact-id="${contactId}"]`);
-                contactElement.remove();
+                if (contactElement) contactElement.remove();
             }
         });
     }
 }
 </script>
+
+<!-- Bootstrap JS, Popper.js, and jQuery CDN -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
