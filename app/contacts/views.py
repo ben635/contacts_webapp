@@ -2,11 +2,14 @@ from django.shortcuts import render
 from django.http import Http404
 from django.urls import reverse
 
+from rest_framework import viewsets
+
 # Create your views here.
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
 from .models import Contact
+from .serializers import ContactSerializer
 
 def list_contact(request, contact_id):
     response = "The name of this contact is %s"
@@ -28,3 +31,10 @@ def create_contacts(request):
     newContact.save()
 
     return HttpResponseRedirect(reverse("Contact", args=(newContact.id,)))
+
+class ContactViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows contacts to be viewed or edited
+    """
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
