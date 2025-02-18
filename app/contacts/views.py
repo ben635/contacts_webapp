@@ -11,13 +11,6 @@ from django.http import HttpResponseRedirect
 from .models import Contact
 from .serializers import ContactSerializer
 from django.http import JsonResponse
-
-def list_contact(request, contact_id):
-    response = "The name of this contact is %s"
-    try:
-        return HttpResponse(response % Contact.objects.get(pk=contact_id))
-    except Contact.DoesNotExist:
-        raise Http404("Contact does not exist.")
     
 def delete_contact(request, contact_id):
     try:

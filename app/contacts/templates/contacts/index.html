@@ -99,7 +99,6 @@
                                     <i class="fas fa-phone text-secondary"></i> {{ contact.telephone_number }}
                                 </p>
                                 <div class="btn-group">
-                                    <a href="{% url 'Contact' contact.id %}" class="btn btn-outline-primary btn-sm">View</a>
                                     <button onclick="deleteContact({{ contact.id }})" class="btn btn-outline-danger btn-sm">Delete</button>
                                 </div>
                             </div>
